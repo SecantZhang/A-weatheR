@@ -14,6 +14,7 @@ class WeatherDataModel {
     var maxTemp : Int = 0
     var minTemp : Int = 0
     var weatherTypeString : String = ""
+    var currentDate : String = ""
     
     func updateWeatherType(weatherType: Int) -> String {
         switch weatherType {

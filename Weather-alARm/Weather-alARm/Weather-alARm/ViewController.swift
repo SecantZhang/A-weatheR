@@ -17,6 +17,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, CLLocationManagerDele
 
     @IBOutlet var sceneView: ARSCNView!
     @IBOutlet weak var CityLabel: UILabel!
+    @IBOutlet weak var TempLabel: UILabel!
+    @IBOutlet weak var WeatLabel: UILabel!
+    @IBOutlet weak var DateLabel: UILabel!
     @IBOutlet weak var getWeatherDataButton: UIButton!
     @IBOutlet weak var overrideTF: UITextField!
     
@@ -77,8 +80,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, CLLocationManagerDele
     }
     
     func ARObjManipulation () {
-        // let sceneName = "art.scnassets/" + weatherDataModel.weatherTypeString
-        let sceneName = "art.scnassets/cloudy.scn"
+        print(weatherDataModel.weatherTypeString)
+        let sceneName = "art.scnassets/" + weatherDataModel.weatherTypeString + ".scn"
         let scene = SCNScene(named: sceneName)!
         sceneView.scene = scene
         sceneView.autoenablesDefaultLighting = true
@@ -119,11 +122,12 @@ class ViewController: UIViewController, ARSCNViewDelegate, CLLocationManagerDele
             response in
             let weatherJSON : JSON = JSON(response.result.value!)
             print(weatherJSON)
-            let maxTemp = weatherJSON["DailyForecasts"]["Temperature"]["Maximum"]["Value"].intValue
-            let minTemp = weatherJSON["DailyForecasts"]["Temperature"]["Minimum"]["Value"].intValue
-            let weaType = weatherJSON["DailyForecasts"]["Day"]["Icon"].intValue
-            
-            self.updateWeatherData(maxTemp: maxTemp, minTemp: minTemp, weaType: weaType)
+            let maxTemp = weatherJSON["DailyForecasts"][0]["Temperature"]["Maximum"]["Value"].intValue
+            print(maxTemp)
+            let minTemp = weatherJSON["DailyForecasts"][0]["Temperature"]["Minimum"]["Value"].intValue
+            let weaType = weatherJSON["DailyForecasts"][0]["Day"]["Icon"].intValue
+            let date = weatherJSON["DailyForecasts"][0]["Date"].stringValue
+            self.updateWeatherData(maxTemp: maxTemp, minTemp: minTemp, weaType: weaType, date: date)
         }
     }
     
@@ -141,17 +145,29 @@ class ViewController: UIViewController, ARSCNViewDelegate, CLLocationManagerDele
         return textNode
     }
     
-    func updateWeatherData (maxTemp: Int, minTemp: Int, weaType: Int) {
+    func updateWeatherData (maxTemp: Int, minTemp: Int, weaType: Int, date: String) {
         weatherDataModel.maxTemp = maxTemp
         weatherDataModel.minTemp = minTemp
         weatherDataModel.weatherType = weaType
         weatherDataModel.weatherTypeString = weatherDataModel.updateWeatherType(weatherType: weatherDataModel.weatherType)
+        weatherDataModel.currentDate = date
     }
     
     func updateUI() {
         CityLabel.lineBreakMode = NSLineBreakMode.byCharWrapping
         CityLabel.text = cityName
         CityLabel.sizeToFit()
+        TempLabel.lineBreakMode = NSLineBreakMode.byCharWrapping
+        TempLabel.text = String(weatherDataModel.minTemp) + " to " + String(weatherDataModel.maxTemp) + " F"
+        TempLabel.sizeToFit()
+        WeatLabel.lineBreakMode = NSLineBreakMode.byCharWrapping
+        WeatLabel.text = weatherDataModel.weatherTypeString
+        WeatLabel.sizeToFit()
+        DateLabel.lineBreakMode = NSLineBreakMode.byCharWrapping
+        DateLabel.text = weatherDataModel.currentDate
+        print("Current City: \(cityName)")
+        print("Current Temp: \(weatherDataModel.minTemp) to \(weatherDataModel.maxTemp)")
+        print("Current Weather: \(weatherDataModel.weatherTypeString)")
     }
     
     @IBAction func getWeatherDataBtPressed(_ sender: Any) {
@@ -166,7 +182,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, CLLocationManagerDele
             print("Empty String inside the TextField")
             return
         } else {
-            let sceneName = "art.scnassets/" + overrideTF.text!
+            let sceneName = "art.scnassets/" + overrideTF.text! + ".scn"
             if let scene = SCNScene(named: sceneName) {
                 sceneView.scene = scene
                 sceneView.autoenablesDefaultLighting = true
