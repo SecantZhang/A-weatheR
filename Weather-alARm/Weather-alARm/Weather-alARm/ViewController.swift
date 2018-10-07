@@ -18,6 +18,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, CLLocationManagerDele
     @IBOutlet var sceneView: ARSCNView!
     @IBOutlet weak var CityLabel: UILabel!
     @IBOutlet weak var getWeatherDataButton: UIButton!
+    @IBOutlet weak var overrideTF: UITextField!
     
     // Instance Variables.
     let locationManager = CLLocationManager()
@@ -41,24 +42,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, CLLocationManagerDele
         // Show debugging points.
         self.sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints]
         
-        // Create a new scene
-        let scene = SCNScene(named: "art.scnassets/cloud_v16_.scn")!
-        
-        // Set the scene to the view
-        sceneView.scene = scene
-        /*
-         * AR Module below.
-         */
-        sceneView.autoenablesDefaultLighting = true
-        let cloudScene = SCNScene(named: "art.scnassets/cloud_v16_.scn")!
-        if let cloudNode = cloudScene.rootNode.childNode(withName: "Cloud", recursively: true) {
-            cloudNode.position = SCNVector3(x: -1, y: 0, z: 2)
-            sceneView.scene.rootNode.addChildNode(cloudNode)
-        }
-        
-        /*
-         * Networking Module Below.
-         */
         
         /*
          * Current Location module.
@@ -92,13 +75,17 @@ class ViewController: UIViewController, ARSCNViewDelegate, CLLocationManagerDele
         // Pause the view's session
         sceneView.session.pause()
     }
-
-    func getWeatherData (url: String, parameters: [String : String]) {
-        Alamofire.request(url, method: .get, parameters: parameters).responseJSON {
-            response in
-            if response.result.isSuccess {
-                
-            }
+    
+    func ARObjManipulation () {
+        // let sceneName = "art.scnassets/" + weatherDataModel.weatherTypeString
+        let sceneName = "art.scnassets/cloudy.scn"
+        let scene = SCNScene(named: sceneName)!
+        sceneView.scene = scene
+        sceneView.autoenablesDefaultLighting = true
+        let cloudScene = SCNScene(named: sceneName)!
+        if let cloudNode = cloudScene.rootNode.childNode(withName: "Cloud", recursively: true) {
+            cloudNode.position = SCNVector3(x: -1, y: 0, z: 2)
+            sceneView.scene.rootNode.addChildNode(cloudNode)
         }
     }
     
@@ -158,6 +145,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, CLLocationManagerDele
         weatherDataModel.maxTemp = maxTemp
         weatherDataModel.minTemp = minTemp
         weatherDataModel.weatherType = weaType
+        weatherDataModel.weatherTypeString = weatherDataModel.updateWeatherType(weatherType: weatherDataModel.weatherType)
     }
     
     func updateUI() {
@@ -169,5 +157,27 @@ class ViewController: UIViewController, ARSCNViewDelegate, CLLocationManagerDele
     @IBAction func getWeatherDataBtPressed(_ sender: Any) {
         getCity(lat: lat, lon: lon)
         updateUI()
+    }
+    @IBAction func GenerateBtPressed(_ sender: Any) {
+        ARObjManipulation()
+    }
+    @IBAction func OverrideBtPressed(_ sender: Any) {
+        if overrideTF.text == nil {
+            print("Empty String inside the TextField")
+            return
+        } else {
+            let sceneName = "art.scnassets/" + overrideTF.text!
+            if let scene = SCNScene(named: sceneName) {
+                sceneView.scene = scene
+                sceneView.autoenablesDefaultLighting = true
+                let cloudScene = SCNScene(named: sceneName)!
+                if let cloudNode = cloudScene.rootNode.childNode(withName: "Cloud", recursively: true) {
+                    cloudNode.position = SCNVector3(x: -1, y: 0, z: 2)
+                    sceneView.scene.rootNode.addChildNode(cloudNode)
+                }
+                
+            }
+        }
+        
     }
 }
