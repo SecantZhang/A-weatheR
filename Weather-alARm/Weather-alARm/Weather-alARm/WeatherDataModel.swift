@@ -15,6 +15,11 @@ class WeatherDataModel {
     var minTemp : Int = 0
     var weatherTypeString : String = ""
     var currentDate : String = ""
+    var h1Temp : Int = 0
+    var h2Temp : Int = 0
+    var h3Temp : Int = 0
+    var h4Temp : Int = 0
+    var h5Temp : Int = 0
     
     func updateWeatherType(weatherType: Int) -> String {
         switch weatherType {

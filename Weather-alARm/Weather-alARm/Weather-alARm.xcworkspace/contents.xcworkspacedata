@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:/Users/Michavillson/Documents/PROJECTS/iOS/AppDevelopment/Weather-alARm/Weather-alARm/Weather-alARm/Weather-alARm/CollectionViewCell.swift">
+   </FileRef>
+   <FileRef
       location = "group:Weather-alARm.xcodeproj">
    </FileRef>
    <FileRef

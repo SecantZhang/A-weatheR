@@ -67,6 +67,17 @@ class ViewController: UIViewController, ARSCNViewDelegate, CLLocationManagerDele
         
         // Create a session configuration
         let configuration = ARWorldTrackingConfiguration()
+        
+        if let imageToTrack = ARReferenceImage.referenceImages(inGroupNamed: "AR Resources", bundle: Bundle.main) {
+            
+            configuration.detectionImages = imageToTrack
+            
+            configuration.maximumNumberOfTrackedImages = 1
+            
+            print("Images Successfully Added")
+            
+            
+        }
 
         // Run the view's session
         sceneView.session.run(configuration)
@@ -195,5 +206,33 @@ class ViewController: UIViewController, ARSCNViewDelegate, CLLocationManagerDele
             }
         }
         
+    }
+    
+    func renderer(_ renderer: SCNSceneRenderer, nodeFor anchor: ARAnchor) -> SCNNode? {
+        
+        let node = SCNNode()
+        
+        if let imageAnchor = anchor as? ARImageAnchor {
+            
+            let plane = SCNPlane(width: imageAnchor.referenceImage.physicalSize.width, height: imageAnchor.referenceImage.physicalSize.height)
+            
+            plane.firstMaterial?.diffuse.contents = UIColor(white: 1.0, alpha: 0.5)
+            
+            let planeNode = SCNNode(geometry: plane)
+            
+            planeNode.eulerAngles.x = -.pi / 2
+            
+            node.addChildNode(planeNode)
+        }
+
+        return node
+        
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "trackingSegue" {
+            let VC = segue.destination as! TrackingViewController
+            VC.currentWeather = weatherDataModel.weatherTypeString
+        }
     }
 }
