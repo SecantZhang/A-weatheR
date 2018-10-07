@@ -9,10 +9,10 @@
 import UIKit
 
 class WeatherDataModel {
-    var weatherType : String = ""
-    var currentTemp : Double = 0.0
-    var maxTemp : Double = 0.0
-    var minTemp : Double = 0.0
+    var weatherType : Int = 0
+    var currentTemp : Int = 0
+    var maxTemp : Int = 0
+    var minTemp : Int = 0
     
 
 }
